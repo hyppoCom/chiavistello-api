@@ -1,30 +1,48 @@
+// Test utilizzo libreria client API Chiavistello
+// vim: tabstop=4:shiftwidth=4
+
 const chiavistelloApi=require('./chiavistello-api.js');
 
+var myKey='xxxxxxxxxxxxxxxxxxxxxxxx';
 
-chiavistelloApi.setKey('xxxxxxxxxxxxxxxxxxxxxxxx');
-chiavistelloApi.info((err,rsp) => { showResult('info',err,rsp); });
-chiavistelloApi.switchList((err,rsp) => { showResult('switchList',err,rsp); });
-chiavistelloApi.partitionList((err,rsp) => { showResult('partitionList',err,rsp); });
-chiavistelloApi.bookingList((err,rsp) => { showResult('bookingList',err,rsp); });
-chiavistelloApi.bookingListAll(0,(err,rsp) => { showResult('bookingList',err,rsp); });
-chiavistelloApi.bookingGetById(26124,(err,rsp) => { showResult('bookingGet',err,rsp); });
-if(0) {
-	var data={
-		id: 26124,
-		notify: 1
-	};
-	chiavistelloApi.bookingSet(data,(err,rsp)=>{showResult('bookingSet',err,rsp)});
-}
-if(0) {
-	chiavistelloApi.bookingDelete(26124,(err,rsp)=>{showResult('bookingDelete',err,rsp)});
-}
-chiavistelloApi.guestList((err,rsp)=>{showResult('guestList',err,rsp)});
-
-
-function showResult(method,err,rsp) {
-	if(err) {
-		console.log('Method: '+method+' Error: '+err);
-	} else {
-		console.log('Method: '+method+' Result:',rsp);
+(async ()=> {
+chiavistelloApi.setKey(myKey);
+try {
+	var r;
+	r=await chiavistelloApi.info();
+	showResult('info',r);
+	r=await chiavistelloApi.switchList();
+	showResult('switchList',r);
+	r=await chiavistelloApi.partitionList();
+	showResult('partitionList',r);
+	r=await chiavistelloApi.bookingList();
+	showResult('bookingList',r);
+	var id=await userPrompt('bookingGetById() - Inserisci ID: ');
+	if(id>0) {
+		r=await chiavistelloApi.bookingGetById(id);
+		showResult('bookingGetById('+id+')',r);
 	}
+	var xref=await userPrompt('bookingGetByXref() - Inserisci Xref: ');
+	if(xref!='') {
+		r=await chiavistelloApi.bookingGetByXref(xref);
+		showResult('bookingGetByXref('+xref+')',r);
+	}
+	r=await chiavistelloApi.guestList();
+	showResult('guestList',r);
+} catch(e) {
+	console.log('Error',e);
+}
+})()
+
+async function userPrompt(prompt) {
+	return new Promise((resolve,reject)=>{
+		const readline=require('readline').createInterface({input:process.stdin,output:process.stdout});
+		readline.question(prompt,name=>{
+			resolve(name);
+			readline.close();
+		});
+	});
+}
+function showResult(method,rsp) {
+	console.log('Method: '+method+' Result:',rsp);
 }

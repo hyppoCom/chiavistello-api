@@ -12,8 +12,6 @@ Obtain ApiKey in your control panel
 
 ```
 chiavistelloApi.setKey('myApiKey');
-chiavistelloApi.info((err,rsp) => {
-	showResult('info',err,rsp);
-});
+var r=await chiavistelloApi.info();
 ````
 

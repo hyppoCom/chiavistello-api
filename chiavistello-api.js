@@ -17,137 +17,120 @@ const chiavistelloApi={
 		this.apiKey=apiKey;
 	},
 	// Informazioni sul Chiavistello
-	info: function(cb) {
-		this.apiRequest('info',null,(err,rsp)=>{
-			cb(err,rsp);
-		});
+	info: async function() {
+		return await this.apiRequest('info',null);
 	},
 	// Elenco switch
-	switchList: function(cb) {
-		this.apiRequest('switchList',null,(err,rsp)=>{
-			cb(err,rsp);
-		});
+	switchList: async function() {
+		return await this.apiRequest('switchList',null);
 	},
 	// Elenco partizioni con relativi switch
-	partitionList: function(cb) {
-		this.apiRequest('partitionList',null,(err,rsp)=>{
-			cb(err,rsp);
-		});
+	partitionList: async function(cb) {
+		return await this.apiRequest('partitionList',null);
 	},
 	// Elenco prenotazioni
-	bookingList: function(data,cb) {
+	bookingList: async function(data) {
 		if(!isNaN(data)) {		// Primo argomento un numero: pagina
 			data={ page: data };
 		}
 		if(typeof(data)=='object') {
-			this.apiRequest('bookingList',data,(err,rsp)=>{
-				cb(err,rsp);
-			});
-		} else if(typeof(data)=='function') {	// Primo argomento una funzione, era la callback
-			this.apiRequest('bookingList',null,(err,rsp)=>{
-				data(err,rsp);
-			});
+			return await this.apiRequest('bookingList',data);
+		} else {
+			return await this.apiRequest('bookingList',null);
 		}
 	},
-	bookingListAll: function(page,cb) {
+	bookingListAll: async function(page) {
 		var data={ all:true, page:page };
-		this.bookingList(data,cb);
+		return await this.bookingList(data);
 	},
 	// Recupera prenotazione (base)
-	bookingGet: function(data,cb) {
-		this.apiRequest('bookingGet',data,(err,rsp)=>{
-			cb(err,rsp);
-		});
+	bookingGet: async function(data) {
+		return await this.apiRequest('bookingGet',data);
 	},
-	bookingGetById: function(id,cb) {
+	bookingGetById: async function(id) {
 		var data={ id:id };
-		this.apiRequest('bookingGet',data,(err,rsp)=>{
-			cb(err,rsp);
-		});
+		return await this.apiRequest('bookingGet',data);
 	},
-	bookingGetByXref: function(xref,cb) {
+	bookingGetByXref: async function(xref) {
 		var data={ externalReference:xref };
-		this.apiRequest('bookingGet',data,(err,rsp)=>{
-			cb(err,rsp);
-		});
+		return await this.apiRequest('bookingGet',data);
 	},
 	// Crea/modifica prenotazione
-	bookingSet: function(data,cb) {
-		this.apiRequest('bookingSet',data,(err,rsp)=>{
-			cb(err,rsp);
-		});
+	bookingSet: async function(data) {
+		return await this.apiRequest('bookingSet',data);
 	},
 	// Elimina prenotazione
-	bookingDelete: function(id,cb) {
+	bookingDelete: async function(id) {
 		var data={ id:id };
-		this.apiRequest('bookingDelete',data,(err,rsp)=>{
-			cb(err,rsp);
-		});
+		return await this.apiRequest('bookingDelete',data);
 	},
 	// Elenco ospiti
-	guestList: function(data,cb) {
+	guestList: async function(data) {
 		if(!isNaN(data)) {		// Primo argomento un numero: pagina
 			data={ page: data };
 		}
 		if(typeof(data)=='object') {
-			this.apiRequest('guestList',data,(err,rsp)=>{
-				cb(err,rsp);
-			});
-		} else if(typeof(data)=='function') {	// Primo argomento una funzione, era la callback
-			this.apiRequest('guestList',null,(err,rsp)=>{
-				data(err,rsp);
-			});
+			return await this.apiRequest('guestList',data);
+		} else {
+			return await this.apiRequest('guestList',null);
 		}
 	},
 	//////////////////////////////////////////////////////////////////////////////
 	// Mid-Level
 	//////////////////////////////////////////////////////////////////////////////
-	apiRequest: function(method,post,cb) {
-		if(post==null) post={};
-		post.token=this.apiKey;
-		post.action=method;
-		this.post(post,(err,rsp)=>{
-			if(!err) {
-				rsp=JSON.parse(rsp);
-				if(rsp.error) {
-					err=rsp.error;
-				}
-			}
-			cb(err,rsp);
+	apiRequest: async function(method,post) {
+		return new Promise((resolve, reject) => {
+			if(post==null) post={};
+			post.token=this.apiKey;
+			post.action=method;
+			this.post(post)
+				.then((rsp)=>{
+					rsp=JSON.parse(rsp);
+					if(rsp.error) {
+						reject(rsp.error);
+					} else {
+						resolve(rsp);
+					}
+				})
+				.catch((err)=>{
+					reject(err);
+				})
 		});
 	},
 	//////////////////////////////////////////////////////////////////////////////
 	// Low-Level
 	//////////////////////////////////////////////////////////////////////////////
-	post: function(post,cb) {
-		var out='';
-		var post=JSON.stringify(post);
-		var opts={
-			headers: {
-				'Content-Type': 'application/json',
-				'Content-Length': post.length
-			},
-			method: 'POST'
-		};
-		try {
-		var req=require('https').request('https://wwh.chiavistello.it/api',opts,(rsp)=>{
-			rsp.on('end',(x)=>{
-				cb(null,out);
-			});
-			rsp.on('data',(chunk)=>{
-				out+=chunk;
-			});
+	post: async function(postdata) {
+		return new Promise((resolve, reject) => {
+			postdata=JSON.stringify(postdata);
+			var out='';
+			var opts={
+				headers: {
+					'Content-Type': 'application/json',
+					'Content-Length': postdata.length
+				},
+				method: 'POST'
+			};
+			try {
+				var req=require('https').request('https://chiavistello.it/api',opts,(rsp)=>{
+					rsp.on('end',(x)=>{
+						resolve(out);
+					});
+					rsp.on('data',(chunk)=>{
+						out+=chunk;
+					});
+				});
+				req.on('error',(e)=>{
+					reject(e.message);
+				});
+			} catch(e) {
+				reject(e.message);
+			}
+			if(req) {
+				req.write(postdata);
+				req.end();
+			}
 		});
-		req.on('error',(e)=>{
-			cb(e.message,null);
-		});
-		} catch(e) {
-			cb(e.message,null);
-		}
-		if(req) {
-			req.write(post);
-			req.end();
-		}
 	}
 };
 
