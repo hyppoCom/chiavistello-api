@@ -1,6 +1,6 @@
 {
   "name": "chiavistello-api",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Chiavistello API Client",
   "homepage": "https://chiavistello.it/api",
   "main": "chiavistello-api.js",
@@ -16,5 +16,8 @@
     "chiavistello-api.js",
     "example.js"
   ],
+  "bugs": {
+        "url": "https://github.com/hyppoCom/chiavistello-cli/issues"
+  },
   "license": "ISC"
 }
