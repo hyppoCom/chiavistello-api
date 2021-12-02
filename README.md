@@ -1,17 +1,14 @@
 # chiavistello-api
 
-This library allows to control Chiavistello Self Check-In.\
-See (https://chiavistello.it/api)
+Librerie per Chiavistello Self Check-In.\
+Vedi (https://chiavistello.it/api)
 
+## ApiKey
+La tua ApiKey si trova in Tools/Notifiche del pannello gi gestione
 
-## Example
+## NodeJS
+Libreria asincrona (Promise)
 
-See example.js
+## PHP
 
-Obtain ApiKey in your control panel
-
-```
-chiavistelloApi.setKey('myApiKey');
-var r=await chiavistelloApi.info();
-````
 
