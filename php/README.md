@@ -6,12 +6,12 @@ See (https://chiavistello.it/api)
 
 ## Example
 
-See example.js
+Vedi example.php
 
 Obtain ApiKey in your control panel
 
 ```
-chiavistelloApi.setKey('myApiKey');
-var r=await chiavistelloApi.info();
+$cvl=new ChiavistelloAPI('myApiKey');
+$r=$cvl->info();
 ````
 
