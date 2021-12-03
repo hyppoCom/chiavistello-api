@@ -33,11 +33,8 @@ const chiavistelloApi={
 		if(!isNaN(data)) {		// Primo argomento un numero: pagina
 			data={ page: data };
 		}
-		if(typeof(data)=='object') {
-			return await this.apiRequest('bookingList',data);
-		} else {
-			return await this.apiRequest('bookingList',null);
-		}
+		if(typeof(data)=='object') data=null;
+		return await this.apiRequest('bookingList',data);
 	},
 	bookingListAll: async function(page) {
 		var data={ all:true, page:page };
@@ -69,11 +66,41 @@ const chiavistelloApi={
 		if(!isNaN(data)) {		// Primo argomento un numero: pagina
 			data={ page: data };
 		}
-		if(typeof(data)=='object') {
-			return await this.apiRequest('guestList',data);
-		} else {
-			return await this.apiRequest('guestList',null);
+		if(typeof(data)=='object') data=null;
+		return await this.apiRequest('guestList',data);
+	},
+	// Elenco pagamenti
+	paymentList: async function(data) {
+		if(!isNaN(data)) {		// Primo argomento un numero: pagina
+			data={ page: data };
 		}
+		if(typeof(data)=='object') data=null;
+		return await this.apiRequest('paymentList',data);
+	},
+	paymentListAll: async function(page) {
+		var data={ all:true, page:page };
+		return await this.paymentList(data);
+	},
+	// Recupera pagamento (base)
+	paymentGet: async function(data) {
+		return await this.apiRequest('paymentGet',data);
+	},
+	paymentGetById: async function(id) {
+		var data={ id:id };
+		return await this.apiRequest('paymentGet',data);
+	},
+	paymentGetByXref: async function(xref) {
+		var data={ externalReference:xref };
+		return await this.apiRequest('paymentGet',data);
+	},
+	// Crea/modifica pagamento
+	paymentSet: async function(data) {
+		return await this.apiRequest('paymentSet',data);
+	},
+	// Elimina pagamento
+	paymentDelete: async function(id) {
+		var data={ id:id };
+		return await this.apiRequest('paymentDelete',data);
 	},
 	//////////////////////////////////////////////////////////////////////////////
 	// Mid-Level

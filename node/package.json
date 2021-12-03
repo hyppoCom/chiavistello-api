@@ -1,6 +1,6 @@
 {
   "name": "chiavistello-api",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Chiavistello API Client",
   "homepage": "https://chiavistello.it/api",
   "main": "chiavistello-api.js",
